@@ -1,4 +1,5 @@
-import urllib.request, json, time
+import urllib.request, json, sys
+from datetime import datetime
 
 with urllib.request.urlopen("https://findapc.lincoln.ac.uk/pcavailability/machinestatus") as url:
     data = json.loads(url.read().decode())
@@ -20,6 +21,16 @@ with urllib.request.urlopen("https://findapc.lincoln.ac.uk/pcavailability/machin
     totalComps = (inUse + free + other)
     percentFull = (inUse / totalComps) * 100
 
-    print("Computers free- " + str(free))
-    print("Computers in use- " + str(inUse))
+    lastUpdated = data['returned']['lastUpdated']
+    #lastUpdated = datetime.strptime(lastUpdated, "%Y-%m-%d %H:%M:%S")
+    print(lastUpdated)
+
+    with urllib.request.urlopen("https://findapc.lincoln.ac.uk/occupancy/updatelibrary") as url:
+        data = json.loads(url.read().decode())
+        occupancy = data['returned']['occupancy']
+
+
+    print("Computers free - " + str(free))
+    print("Computers in use - " + str(inUse))
     print("Library Computers are " + str("%.0f" % percentFull) + "% full." )
+    print("There are", str(occupancy), "people in the Library")
