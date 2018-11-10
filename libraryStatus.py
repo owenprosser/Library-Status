@@ -1,4 +1,4 @@
-import urllib.request, json, sys
+import urllib.request, json
 from datetime import datetime
 
 class library:
@@ -18,11 +18,13 @@ class library:
         self.percentFull = 0
         self.occupancy = 0
         self.lastUpdated = None
+        self.timeDelta = None
 
         self.getJSON()
         self.getStats()
         self.getOccupancy()
         self.formatTimestamp()
+        self.getJSONAge()
 
     def getJSON(self):
         with urllib.request.urlopen("https://findapc.lincoln.ac.uk/pcavailability/machinestatus") as url:
@@ -96,11 +98,14 @@ class library:
 
         self.lastUpdated = newString[:-14]
 
+    def getJSONAge(self):
+        self.lastUpdated =  datetime.strptime(self.lastUpdated, "%Y-%m-%d %X")
+        self.timeDelta = (datetime.now() - self.lastUpdated).total_seconds() / 60.0
+
 if __name__ == "__main__":
     library = library()
 
-
-    print("\n" + library.lastUpdated + "\n")
+    print("\nLast Updated: " + str("%.2f " % library.timeDelta) + "Minutes ago at: " + str(library.lastUpdated) + "\n")
     print("Computers free - " + str(library.free))
     print("Computers in use - " + str(library.inUse))
     print("Library Computers are " + str("%.0f" % library.percentFull) + "% capacity." )
