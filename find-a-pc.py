@@ -7,6 +7,14 @@ with urllib.request.urlopen("https://findapc.lincoln.ac.uk/pcavailability/machin
     inUse = 0
     free = 0
     other = 0
+    totalGround = 0
+    totalFirst = 0
+    totalSecond = 0
+    totalThird = 0
+    inUseGround = 0
+    inUseFirst = 0
+    inUseSecond = 0
+    inUseThird = 0
 
     for item in data['returned']['machines']:
         #print(item['status'])
@@ -32,5 +40,5 @@ with urllib.request.urlopen("https://findapc.lincoln.ac.uk/pcavailability/machin
 
     print("Computers free - " + str(free))
     print("Computers in use - " + str(inUse))
-    print("Library Computers are " + str("%.0f" % percentFull) + "% full." )
+    print("Library Computers are " + str("%.0f" % percentFull) + "% capacity." )
     print("There are", str(occupancy), "people in the Library")
