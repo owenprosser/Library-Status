@@ -1,5 +1,5 @@
 # Library-Status
-Shows the number of students currently in the University Library all from the comfort of your own Bash shell!
+Shows the number of students currently in the University Library all from the comfort of your shell!
 
 ## To run as commmand in bash:
 Make the file executable

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import urllib.request, json
+import requests, json, ssl
 from datetime import datetime
 
 class library:
@@ -29,26 +29,26 @@ class library:
         self.getJSONAge()
 
     def getJSON(self):
-        with urllib.request.urlopen("https://findapc.lincoln.ac.uk/pcavailability/machinestatus") as url:
-            data = json.loads(url.read().decode())
+        response = requests.get("https://findapc.lincoln.ac.uk/pcavailability/machinestatus")
+        data = response.json()
 
-        for item in data['returned']['machines']:
+        for item in data['machines']:
             if (item['building'] == "UL"):
-                if (item['floor'] == "ground"):
+                if (item['floor'] == "Ground"):
                     self.groundFloor(item)
-                elif (item['floor'] == "first"):
+                elif (item['floor'] == "First"):
                     self.firstFloor(item)
-                elif (item['floor'] == "second"):
+                elif (item['floor'] == "Second"):
                     self.secondFloor(item)
-                elif (item['floor'] == "third"):
+                elif (item['floor'] == "Third"):
                     self.thirdFloor(item)
 
-        self.lastUpdated = data['returned']['lastUpdated']
+        self.lastUpdated = data['lastUpdated']
     
     def groundFloor(self, item):
         self.totalGround += 1
 
-        if (item['status'] == "in use"):
+        if item['status'] in ["in use", "OOS", "forceOos"]:
             self.inUse += 1
             self.inUseGround += 1
         elif (item['status'] == "free"):
@@ -57,7 +57,7 @@ class library:
     def firstFloor(self, item):
         self.totalFirst += 1
 
-        if (item['status'] == "in use"):
+        if item['status'] in ["in use", "OOS", "forceOos"]:
             self.inUse += 1
             self.inUseFirst += 1
         elif (item['status'] == "free"):
@@ -66,7 +66,7 @@ class library:
     def secondFloor(self, item):
         self.totalSecond += 1
 
-        if (item['status'] == "in use"):
+        if item['status'] in ["in use", "OOS", "forceOos"]:
             self.inUse += 1
             self.inUseSecond += 1
         elif (item['status'] == "free"):
@@ -75,7 +75,7 @@ class library:
     def thirdFloor(self, item):
         self.totalThird += 1
 
-        if (item['status'] == "in use"):
+        if item['status'] in ["in use", "OOS", "forceOos"]:
             self.inUse += 1
             self.inUseThird += 1
         elif (item['status'] == "free"):
@@ -86,9 +86,9 @@ class library:
         self.percentFull = (self.inUse / self.totalComps) * 100
 
     def getOccupancy(self):
-        with urllib.request.urlopen("https://findapc.lincoln.ac.uk/occupancy/updatelibrary") as url:
-            data = json.loads(url.read().decode())
-            self.occupancy = data['returned']['occupancy']
+        response = requests.get("https://findapc.lincoln.ac.uk/occupancy/updatelibrary")
+        data = response.json()
+        self.occupancy = data['occupancy']
 
     def formatTimestamp(self):
         newString = ""
